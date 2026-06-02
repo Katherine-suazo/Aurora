@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'appWeb',
+    'stogare',
 ]
 
 MIDDLEWARE = [
@@ -110,4 +113,25 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SERVIDORES QUE SE PUEDEN CONECTAR A DJANGO
-CORS_ALLOW_ALL_ORIGINS = True
+#CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+
+
+# CONECTARSE A S3
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+}
+
+
+AWS_ACCESS_KEY_ID = '' # clave de acceso real aqui
+AWS_SECRET_ACCESS_KEY = '' # clave secreta real aqui
+AWS_STORAGE_BUCKET_NAME = '' # nombre del bucket
+AWS_S3_REGION_NAME = '' # region del bucket 
+
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
