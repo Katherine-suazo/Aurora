@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class SubirArchivo(models.Model):
+class Archivo(models.Model):
     archivo = models.FileField(upload_to='archivos/')
     fecha_subida = models.DateTimeField(auto_now_add=True)
 

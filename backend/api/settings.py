@@ -126,7 +126,6 @@ STORAGES = {
     },
 }
 
-
 AWS_ACCESS_KEY_ID = '' # clave de acceso real aqui
 AWS_SECRET_ACCESS_KEY = '' # clave secreta real aqui
 AWS_STORAGE_BUCKET_NAME = '' # nombre del bucket

@@ -1,8 +1,8 @@
-from rest_fraemework import serializers
-from .models import SubirArchivo
+from rest_framework import serializers
+from .models import Archivo
 
 
-class SubirArchivoSerializer(serializers.ModelSerializer):
+class ArchivoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubirArchivo
+        model = Archivo
         fields = '__all__'
