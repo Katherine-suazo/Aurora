@@ -126,11 +126,6 @@ STORAGES = {
     },
 }
 
-AWS_ACCESS_KEY_ID = '' # clave de acceso real aqui
-AWS_SECRET_ACCESS_KEY = '' # clave secreta real aqui
-AWS_STORAGE_BUCKET_NAME = '' # nombre del bucket
-AWS_S3_REGION_NAME = '' # region del bucket 
+# en .env se encuentran las credenciales para acceder a aws s3
 
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+
