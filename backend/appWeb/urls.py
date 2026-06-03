@@ -10,4 +10,6 @@ urlpatterns = [
 ]
 
 
-# todo este codigo genera por defecto el CRUD
+# todo este codigo genera por defecto el get post put delete
+
+
