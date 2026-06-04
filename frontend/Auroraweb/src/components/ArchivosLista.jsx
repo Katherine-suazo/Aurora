@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { getAllArchivos } from "../api/apiFile";
-import { ArchivoCard } from "./ArchivosCard";
-
 
 export function ArchivosList() {
     const [archivos, setArchivos] = useState([]);

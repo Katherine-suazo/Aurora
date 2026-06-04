@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { getAllArchivos, crearArchivo, eliminarArchivo } from "../api/apiFile";
 import { useNavigate, useParams } from "react-router-dom";
+import { ArchivosList } from "../components/ArchivosLista";
 
 
 export function ArchivoFormPage() {
@@ -29,8 +30,6 @@ return(
             <input type="file" onChange={handleFileChange} />
             <button onClick={handleUlpload}>Subir archivo</button>
         </form>
-
-        
 
     </div>
 

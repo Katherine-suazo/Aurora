@@ -1,12 +1,14 @@
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {ArchivoFormPage} from "./pages/ArchivoFormPage";
+import { ArchivosPage } from './pages/ArchivosPage';
 
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<ArchivoFormPage/>} />
+                <Route path='/' element={ <Navigate to={'/archivos'} /> } />
+                <Route path='/archivos' element={ <ArchivosPage/> } />
             </Routes>
         </BrowserRouter>
     )
