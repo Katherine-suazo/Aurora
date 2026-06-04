@@ -10,8 +10,13 @@ export function ArchivoFormPage() {
     const params = useParams();
 
     const onSubmit = handleSubmit(async (data) => {
-        await crearArchivo(data);
-        navigate('/files') // redireccionar
+        try {
+            await crearArchivo(data);
+            navigate('/files') // redireccionar
+        }
+        catch (error) {
+            console.error('Error en onSubmit crearArchivo'.error)
+        }
     })
 }
 
@@ -19,12 +24,14 @@ export function ArchivoFormPage() {
 return(
 
     <div>
-        <form onSubmit={onSubmit}>
 
+        <form onSubmit={onSubmit}>
             <input type="file" onChange={handleFileChange} />
             <button onClick={handleUlpload}>Subir archivo</button>
-
         </form>
+
+        
+
     </div>
 
 )

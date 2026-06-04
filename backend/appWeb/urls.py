@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import ArchivoViewSet
 
 router = DefaultRouter()
-router.register(r'', ArchivoViewSet, basename='archivo')
+router.register(r'files', ArchivoViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
