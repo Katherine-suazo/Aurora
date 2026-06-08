@@ -4,8 +4,8 @@ import { ArchivoFormPage } from "../components/ArchivoFormPage";
 export function ArchivosPage() {
     return (
         <div>
-            <ArchivoFormPage />
-            <ArchivosList />
+            <ArchivoFormPage />  # para subir el archivo
+            <ArchivosList />     # mustra listado de los archivos
         </div>
     )
 }
