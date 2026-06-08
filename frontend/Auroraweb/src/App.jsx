@@ -1,5 +1,4 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
-import {ArchivoFormPage} from "./pages/ArchivoFormPage";
 import { ArchivosPage } from './pages/ArchivosPage';
 
 

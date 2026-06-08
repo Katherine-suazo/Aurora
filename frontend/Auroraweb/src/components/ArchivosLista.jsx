@@ -6,22 +6,24 @@ export function ArchivosList() {
 
     useEffect(() => {
         async function cargarArchivos() {
-            try{
+            try {
                 const respuesta = await getAllArchivos();
                 console.log(respuesta.data);
                 setArchivos(respuesta.data);
             }
-            catch(error) {
+            catch (error) {
                 console.log('Error en cargar archivos', error)
             }
-        } 
+        }
         cargarArchivos();
 
     }, []);
 
     return (
         <div>
-            {archivos.map(archivo => ( archivo={archivo} ) )}
+            {archivos.map((archivo) => (
+                <div key={archivo.id}> {archivo.nombre} </div>
+            ))}
         </div>
     )
 

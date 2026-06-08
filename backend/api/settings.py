@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'appWeb',
-    'stogare',
+    'stogares',
     'corsheaders',
 ]
 
@@ -115,7 +115,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SERVIDORES QUE SE PUEDEN CONECTAR A DJANGO
-CORS_ALLOW_ALL_ORIGINS = [
+CORS_ALLOW_ORIGINS = [
     "http://localhost:5173", # react
 ]
 

@@ -1,11 +1,12 @@
 import { ArchivosList } from "../components/ArchivosLista";
-import { ArchivoFormPage } from "../components/ArchivoFormPage";
+import { ArchivoForm } from "../components/ArchivoForm";
 
 export function ArchivosPage() {
     return (
         <div>
-            <ArchivoFormPage />  # para subir el archivo
-            <ArchivosList />     # mustra listado de los archivos
+            <h1>Hola xd</h1>
+            <ArchivoForm /> 
+            <ArchivosList /> 
         </div>
     )
 }
