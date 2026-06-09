@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { getAllArchivos, crearArchivo, eliminarArchivo } from "../api/apiFile";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArchivosList } from "./ArchivosLista";
+import "../style/Estilo.css";
 
 
 export function ArchivoForm() {
@@ -22,7 +23,7 @@ export function ArchivoForm() {
     formData.append("archivo", archivo);
 
     return (
-        <div>
+        <div className="container">
 
             <h2>Subir archivo</h2>
 
