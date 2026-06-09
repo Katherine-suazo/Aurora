@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffectse } from "react";
 import { useForm } from "react-hook-form";
 import { getAllArchivos, crearArchivo, eliminarArchivo } from "../api/apiFile";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,13 +7,19 @@ import { ArchivosList } from "./ArchivosLista";
 
 export function ArchivoForm() {
     const [archivo, setArchivo] = useState(null);
+    const formData = new FormData();
 
     const handleFileChange = (e) => {
-        setArchivo(e.target.files[0]);
+        const file = e.target.files[0];
+        if (!file) return;
+        setArchivo(file)
     };
+
     const handleUpload = () => {
         console.log("archivo seleccionado", archivo);
     };
+
+    formData.append("archivo", archivo);
 
     return (
         <div>
@@ -23,16 +29,16 @@ export function ArchivoForm() {
             <input type="file" onChange={handleFileChange} />
             <button onClick={handleUpload}>Subir archivo</button>
 
-            {archivo && (
-                <div>
-                    <p>Nombre: {archivo.name}</p>
-                    <p>Tamaño: {(archivo.size / 1024 / 1024).toFixed(2)} MB </p>
-                </div>
+            <h2>Lista de archivos</h2>
+
+            {archivo ? (
+                <ArchivosList archivo={archivo} />
+            ) : (
+                <p>no hay archivos subidos aun</p>
             )}
+            
 
         </div>
     );
 
 }
-
-

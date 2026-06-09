@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'appWeb',
-    'stogares',
+    'storages',
     'corsheaders',
 ]
 
@@ -123,7 +123,10 @@ CORS_ALLOW_ORIGINS = [
 # CONECTARSE A S3
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",  # para guardar los archivos de usuario
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage", # para guardar los archivos estaticos
     },
 }
 
