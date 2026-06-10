@@ -68,3 +68,16 @@ button {
 button:hover {
     background-color: #1d4ed8;
 }
+
+.filtros {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filtros select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
