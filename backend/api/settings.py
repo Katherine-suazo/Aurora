@@ -34,8 +34,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',                    ######
+    'corsheaders.middleware.CorsMiddleware',      
+    'django.contrib.sessions.middleware.SessionMiddleware',            
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -115,7 +115,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SERVIDORES QUE SE PUEDEN CONECTAR A DJANGO
-CORS_ALLOW_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # react
 ]
 

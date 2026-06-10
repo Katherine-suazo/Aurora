@@ -6,7 +6,7 @@ export function ArchivosPage() {
     return (
         <div className="body">
 
-            <h1 class="titulo">Hola xd</h1>
+            <h1 className="titulo">Cloud</h1>
             <ArchivoForm /> 
             <ArchivosList /> 
 

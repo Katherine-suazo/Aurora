@@ -8,8 +8,8 @@ from rest_framework.response import Response
 
 # este es para el crud
 class ArchivoViewSet(viewsets.ModelViewSet):
+    queryset = Archivo.objects.all().order_by("-fecha_subida")
     serializer_class = ArchivoSerializer
-    queryset = Archivo.objects.all()
 
 # este para los endpoint
 class VerificacionEstado(APIView):

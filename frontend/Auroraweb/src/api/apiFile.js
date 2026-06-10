@@ -1,26 +1,26 @@
 import axios from 'axios';
 
 const ApiFile = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "http://localhost:8000/api", // donde corre django
 });
 
 
 // GET
 export const getAllArchivos = async () => {
     try {
-        const response = await ApiFile.get('/files');
-        return response;
+        const response = await ApiFile.get('/files/');
+        return response.data;
     }
     catch (error) {
         console.error("Error en get archivos:", error);
-        return null;
+        return [];
     }
 };
 
 // POST
-export const crearArchivo = async (fileData) => {
+export const crearArchivo = async (archivoData) => {
     try {
-        const response = await ApiFile.post('/upload/presigned-url', fileData);
+        const response = await ApiFile.post('/files/', archivoData);
         return response;
     }
     catch (error) {
@@ -30,9 +30,9 @@ export const crearArchivo = async (fileData) => {
 }
 
 // DELETE
-export const eliminarArchivo = async (fileId) => {
+export const eliminarArchivo = async (archivoId) => {
     try {
-        const response = await ApiFile.delete(`files/${fileId}/`);
+        const response = await ApiFile.delete(`files/${archivoId}/`);
         return response;
     }
     catch (error) {
