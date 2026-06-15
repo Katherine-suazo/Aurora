@@ -1,9 +1,20 @@
 from pathlib import Path
 import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Inicializar environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+# Leer el archivo .env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Reemplaza tus variables existentes por la lectura del .env:
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -130,6 +141,24 @@ STORAGES = {
     },
 }
 
+# --- CONFIGURACIÓN DE STORAGE CON AWS S3 ---
 # en .env se encuentran las credenciales para acceder a aws s3
 
+# Leer credenciales desde el archivo .env
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
 
+# Requerido obligatoriamente para cuentas institucionales/AWS Academy
+AWS_SESSION_TOKEN = env('AWS_SESSION_TOKEN')
+
+# Seguridad y comportamiento de archivos
+AWS_S3_FILE_OVERWRITE = False  # Si se sube un archivo con el mismo nombre, Django le añade un sufijo aleatorio
+AWS_DEFAULT_ACL = None         # Mantiene la privacidad heredada del bucket
+
+# Definir S3 como el almacenamiento por defecto para archivos multimedia (Media)
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# URL para acceder a los archivos multimedia (Django la generará automáticamente firmada)
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
