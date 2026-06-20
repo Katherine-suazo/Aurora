@@ -1,5 +1,6 @@
-import { getAllArchivos } from "../api/apiFile";
+import { obtenerListaArchivos } from "../api/apiFile";
 import { useEffect, useState } from "react";
+import "../style/Estilo.css"
 
 
 export function ArchivosList() {
@@ -10,12 +11,12 @@ export function ArchivosList() {
     useEffect(() => { cargarArchivos() }, []);
 
     const cargarArchivos = async () => {
-        const data = await getAllArchivos();
-        setArchivos(data || []);
+        const data = await obtenerListaArchivos();
+        setArchivos(data.archivos || []);
     };
 
     if (archivos.length === 0) {
-        return <p>No hay archivos registrados</p>
+        return <p className="container" >No hay archivos registrados</p>
     };
 
     const archivosOrdenados = [...archivos].sort((a, b) => {
@@ -23,11 +24,11 @@ export function ArchivosList() {
         if (campoOrden === "nombre") {
             resultado = a.nombre.localeCompare(b.nombre);
         }
-        if (campoOrden === "tamaño") {
-            resultado = a.tamaño - b.tamaño;
+        if (campoOrden === "tamano_bytes") {
+            resultado = a.tamano_bytes - b.tamano_bytes;
         }
-        if (campoOrden === "fecha_subida") {
-            resultado = new Date(a.fecha_subida) - new Date(b.fecha_subida);
+        if (campoOrden === "ultima_modificacion") {
+            resultado = new Date(a.ultima_modificacion) - new Date(b.ultima_modificacion);
         }
         return direccionOrden === "asc" ? resultado : -resultado;
     });
@@ -67,10 +68,10 @@ export function ArchivosList() {
                     <tbody>
                         {archivosOrdenados.map((archivo) => (
 
-                            <tr key={archivo.id} >
+                            <tr key={archivo.nombre} >
                                 <td> {archivo.nombre} </td>
-                                <td> {(archivo.tamaño / 1024 / 1024).toFixed(2)} MB </td>
-                                <td> {new Date(archivo.fecha_subida).toLocaleDateString()} </td>
+                                <td> {(archivo.tamano_bytes / 1024 / 1024).toFixed(2)} MB </td>
+                                <td> {new Date(archivo.ultima_modificacion).toLocaleDateString()} </td>
                             </tr>
 
                         ))}

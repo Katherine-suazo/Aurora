@@ -13,7 +13,7 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Reemplaza tus variables existentes por la lectura del .env:
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('AWS_SECRET_ACCESS_KEY')
 DEBUG = env('DEBUG')
 
 # Quick-start development settings - unsuitable for production

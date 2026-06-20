@@ -1,19 +1,45 @@
 # views.py
 import uuid
 import boto3
+from botocore.config import Config
 from django.conf import settings
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 
 from .models import Archivo
-from .serializer import ArchivoSerializer
-
 
 # Este es para el crud estándar (Listar, Guardar en BD, Eliminar, etc.)
-class ArchivoViewSet(viewsets.ModelViewSet):
-    queryset = Archivo.objects.all().order_by("-fecha_subida")
-    serializer_class = ArchivoSerializer
+class ArchivoS3List(APIView):
+    def get(self, request, format=None):
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            aws_session_token=settings.AWS_SESSION_TOKEN,
+            region_name=settings.AWS_S3_REGION_NAME,
+            config=Config(signature_version='s3v4')
+        )
+        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+        
+        try:
+            response = s3_client.list_objects_v2(Bucket=bucket_name)
+            archivos_data = []
+            print(response['Contents'])
+            if 'Contents' in response:
+                for obj in response['Contents']:
+                    archivos_data.append({
+                        'nombre': obj['Key'],
+                        'tamano_bytes': obj['Size'],
+                        'ultima_modificacion': obj['LastModified']
+                    })
+
+            return Response({'archivos': archivos_data}, status=status.HTTP_200_OK)
+                
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 # Este para verificar que el backend responda correctamente
@@ -47,7 +73,8 @@ class UrlCarga(APIView):
                 aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                 aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                 aws_session_token=settings.AWS_SESSION_TOKEN,
-                region_name=settings.AWS_S3_REGION_NAME
+                region_name=settings.AWS_S3_REGION_NAME,
+                config=Config(signature_version='s3v4')
             )
             
             # 3. Solicitar a AWS la URL firmada para una operación de subida (put_object)

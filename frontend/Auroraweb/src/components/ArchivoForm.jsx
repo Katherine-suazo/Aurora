@@ -1,6 +1,6 @@
-import { useState, useEffectse } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { getAllArchivos, crearArchivo, eliminarArchivo } from "../api/apiFile";
+import { obtenerUrl, subirArchivos} from "../api/apiFile";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArchivosList } from "./ArchivosLista";
 import "../style/Estilo.css";
@@ -30,7 +30,19 @@ export function ArchivoForm() {
         setArchivo(file)
     };
 
-    const handleUpload = () => {
+    const handleUpload = async () => {
+        if (!archivo) {
+            alert("Selecciona un archivo antes de subir");
+            return;
+        }
+
+        const responseUrl = await obtenerUrl(archivo);
+        console.log(responseUrl);
+        await subirArchivos(responseUrl, archivo);
+        //llamar api
+        //obyener visitarurl
+        //llamar api 2 con visitarurl
+        //si esto es status 200 ok
         console.log("archivo seleccionado", archivo);
     };
 
