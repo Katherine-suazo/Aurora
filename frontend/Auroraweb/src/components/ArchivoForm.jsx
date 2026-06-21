@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { obtenerUrl, subirArchivos} from "../api/apiFile";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArchivosList } from "./ArchivosLista";
 import "../style/Estilo.css";
 
 
@@ -37,15 +34,17 @@ export function ArchivoForm() {
         }
 
         const responseUrl = await obtenerUrl(archivo);
+        if (!responseUrl) {
+            alert("No se pudo generar la URL de subida");
+            return;
+        }
+
         console.log(responseUrl);
         await subirArchivos(responseUrl, archivo);
-        //llamar api
-        //obyener visitarurl
-        //llamar api 2 con visitarurl
-        //si esto es status 200 ok
+        window.location.reload()
+
         console.log("archivo seleccionado", archivo);
     };
-
 
     return (
         <div className="container">

@@ -1,4 +1,4 @@
-import { obtenerListaArchivos } from "../api/apiFile";
+import { EliminarArchivo, obtenerListaArchivos } from "../api/apiFile";
 import { useEffect, useState } from "react";
 import "../style/Estilo.css"
 
@@ -22,16 +22,23 @@ export function ArchivosList() {
     const archivosOrdenados = [...archivos].sort((a, b) => {
         let resultado = 0;
         if (campoOrden === "nombre") {
-            resultado = a.nombre.localeCompare(b.nombre);
+            resultado = a.nombre.localeCompare(b.nombre, "es", { numeric: true, sensitivity: "base" });
         }
         if (campoOrden === "tamano_bytes") {
-            resultado = a.tamano_bytes - b.tamano_bytes;
+            resultado = Number(a.tamano_bytes || 0) - Number(b.tamano_bytes || 0);
         }
         if (campoOrden === "ultima_modificacion") {
             resultado = new Date(a.ultima_modificacion) - new Date(b.ultima_modificacion);
         }
         return direccionOrden === "asc" ? resultado : -resultado;
     });
+
+    const eliminarArchivo = async (key) => {
+        await EliminarArchivo(key);
+        await cargarArchivos();
+        window.location.reload()
+    }
+
 
     return (
         <div className="container" >
@@ -42,8 +49,8 @@ export function ArchivosList() {
                 <label>Ordenar por:</label>
                 <select value={campoOrden} onChange={(e) => setCampoOrden(e.target.value)}>
                     <option value="nombre">Nombre</option>
-                    <option value="tamaño">Tamaño</option>
-                    <option value="fecha_subida">Fecha</option>
+                    <option value="tamano_bytes">Tamaño</option>
+                    <option value="ultima_modificacion">Fecha</option>
                 </select>
 
                 <label>Dirección:</label>
@@ -62,6 +69,7 @@ export function ArchivosList() {
                             <th> Nombre </th>
                             <th> Tamaño </th>
                             <th> Fecha </th>
+                            <th> Acciones </th>
                         </tr>
                     </thead>
 
@@ -72,6 +80,11 @@ export function ArchivosList() {
                                 <td> {archivo.nombre} </td>
                                 <td> {(archivo.tamano_bytes / 1024 / 1024).toFixed(2)} MB </td>
                                 <td> {new Date(archivo.ultima_modificacion).toLocaleDateString()} </td>
+                                <td>
+                                    <button type="button" onClick={() => eliminarArchivo(archivo.nombre)}>
+                                        Eliminar
+                                    </button>
+                                </td>
                             </tr>
 
                         ))}
@@ -83,5 +96,3 @@ export function ArchivosList() {
         </div>
     )
 }
-
-

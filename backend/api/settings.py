@@ -12,20 +12,10 @@ env = environ.Env(
 # Leer el archivo .env
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Reemplaza tus variables existentes por la lectura del .env:
-SECRET_KEY = env('AWS_SECRET_ACCESS_KEY')
-DEBUG = env('DEBUG')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=False)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--+18!(q09o0u9-p!$3xcll&y^7z0lu+qca2%asi7*ob#9zev1m'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 
 # Application definition
@@ -152,11 +142,13 @@ AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
 
 # Requerido obligatoriamente para cuentas institucionales/AWS Academy
 AWS_SESSION_TOKEN = env('AWS_SESSION_TOKEN')
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_OBJECT_PARAMETERS = {
+    "ServerSideEncryption": "AES256",
+}
 
 # Seguridad y comportamiento de archivos
-AWS_S3_FILE_OVERWRITE = False  # Si se sube un archivo con el mismo nombre, Django le añade un sufijo aleatorio
-AWS_DEFAULT_ACL = None         # Mantiene la privacidad heredada del bucket
-
 # Definir S3 como el almacenamiento por defecto para archivos multimedia (Media)
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
