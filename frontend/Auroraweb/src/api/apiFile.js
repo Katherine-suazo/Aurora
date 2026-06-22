@@ -4,6 +4,9 @@ const ApiFile = axios.create({
     baseURL: "http://localhost:8000/api", // donde corre django
 });
 
+
+//--------------------------------------------------------------------------- S3
+
 // GET
 export const obtenerListaArchivos = async () => {
     try {
@@ -40,26 +43,51 @@ export const obtenerUrl = async (documento) => {
             type: documento.type,
         });
         console.log(response);
-        return response.data.visitarURL;
+        return response.data;
     }
     catch (error) {
         console.error("Error en post archivos:", error);
-        return [];
+        return null;
     }
 };
 
 
 // PUT
-export const subirArchivos = async (url, documento) => {
+export const subirArchivos = async (url, documento, headers = {}) => {
     try {
         const response = await axios.put(url, documento, {
-            headers: { 'Content-Type': documento.type || 'application/octet-stream' }
+            headers: {
+                'Content-Type': documento.type || 'application/octet-stream',
+                ...headers,
+            }
         });
         console.log(response);
-        return response.data;   
+        return response;   
     }
     catch (error) {
         console.error("Error en put archivos:", error);
-        return [];
+        return null;
     }
 };
+
+
+//----------------------------------------------------------------------------- DYNAMODB
+
+
+// POST
+export const guardarMetadataArchivo = async ({ key, documento }) => {
+    try {
+        const response = await ApiFile.post('/upload/metadata', {
+            key,
+            nombre_proyecto: documento.name,
+            tamano: documento.size,
+        });
+        console.log(response);
+        return response.data;
+    }
+    catch (error) {
+        console.error("Error guardando metadata:", error);
+        return null;
+    }
+};
+

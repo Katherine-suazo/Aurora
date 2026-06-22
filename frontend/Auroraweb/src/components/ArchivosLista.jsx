@@ -8,12 +8,16 @@ export function ArchivosList() {
     const [campoOrden, setCampoOrden] = useState("nombre");
     const [direccionOrden, setDireccionOrden] = useState("asc");
 
-    useEffect(() => { cargarArchivos() }, []);
-
-    const cargarArchivos = async () => {
+    async function cargarArchivos() {
         const data = await obtenerListaArchivos();
         setArchivos(data.archivos || []);
-    };
+    }
+
+    useEffect(() => {
+        obtenerListaArchivos().then((data) => {
+            setArchivos(data.archivos || []);
+        });
+    }, []);
 
     if (archivos.length === 0) {
         return <p className="container" >No hay archivos registrados</p>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { obtenerUrl, subirArchivos} from "../api/apiFile";
+import { guardarMetadataArchivo, obtenerUrl, subirArchivos} from "../api/apiFile";
 import "../style/Estilo.css";
 
 
@@ -18,12 +18,10 @@ export function ArchivoForm() {
             alert("Solo docx y pptx");
             return;
         }
-
         if (file.size > maxSize) {
             alert("El archivo supera el limite de 18 MB");
             return;
         } 
-
         setArchivo(file)
     };
 
@@ -33,16 +31,30 @@ export function ArchivoForm() {
             return;
         }
 
-        const responseUrl = await obtenerUrl(archivo);
-        if (!responseUrl) {
+        const datosCarga = await obtenerUrl(archivo);
+        if (!datosCarga?.visitarURL || !datosCarga?.key) {
             alert("No se pudo generar la URL de subida");
             return;
         }
+        console.log(datosCarga.visitarURL);
 
-        console.log(responseUrl);
-        await subirArchivos(responseUrl, archivo);
+        const uploadResponse = await subirArchivos(datosCarga.visitarURL, archivo, datosCarga.headers);
+        if (!uploadResponse) {
+            alert("No se pudo subir el archivo");
+            return;
+        }
+
+        const metadata = await guardarMetadataArchivo({
+            key: datosCarga.key,
+            documento: archivo,
+        });
+
+        if (!metadata) {
+            alert("El archivo subio a S3, pero no se pudo guardar la metadata");
+            return;
+        }
+
         window.location.reload()
-
         console.log("archivo seleccionado", archivo);
     };
 

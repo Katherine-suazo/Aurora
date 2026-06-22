@@ -1,13 +1,14 @@
 import uuid
 import logging
 import os
-import boto3
+import boto3 # nos permite interactuar con aws services
+from boto3.dynamodb.conditions import Attr
 from botocore.config import Config
 from django.conf import settings
-from rest_framework import viewsets, status
+from django.utils import timezone
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import JsonResponse
 from urllib.parse import unquote
 # from .models import Archivo
 
@@ -30,7 +31,54 @@ def tamanio_permitido(size, max_size):
         return int(size) <= max_size
     except (TypeError, ValueError):
         return False
+    
 
+#------------------------------------------------------------------------------------------- dynamoDB
+
+def obtener_tabla_dynamodb():
+    dynamodb = boto3.resource(
+        'dynamodb',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        aws_session_token=settings.AWS_SESSION_TOKEN,
+        region_name=settings.AWS_S3_REGION_NAME,
+    )
+    return dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
+
+
+def guardar_metadata_dynamodb(nombre_proyecto, s3_key, tamano):
+    table = obtener_tabla_dynamodb()
+    item = {
+        'id_tabla': uuid.uuid4().hex,
+        'nombre_proyecto': nombre_proyecto,
+        's3_key': s3_key,
+        'url_archivo': f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}",
+        'fecha_subida': timezone.now().isoformat(),
+        'tamano': int(tamano),
+    }
+    table.put_item(Item=item)
+    return item
+
+
+def eliminar_metadata_dynamodb_por_s3_key(s3_key):
+    table = obtener_tabla_dynamodb()
+    response = table.scan( FilterExpression=Attr('s3_key').eq(s3_key) )
+    items = response.get('Items', [])
+
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(
+            FilterExpression=Attr('s3_key').eq(s3_key),
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+        )
+        items.extend(response.get('Items', []))
+
+    key_names = [key['AttributeName'] for key in table.key_schema]
+    for item in items:
+        table.delete_item( Key={key_name: item[key_name] for key_name in key_names} )
+
+    return len(items)
+
+# ------------------------------------------------------------------------------------------ S3
 
 # Este es para el crud estándar (Listar, Guardar en BD, Eliminar, etc.)
 class ArchivoS3List(APIView):
@@ -60,6 +108,7 @@ class ArchivoS3List(APIView):
 
         except Exception as e:
             logger.exception("Error al listar archivos desde S3")
+            print(e)
             return Response({'error': 'No se pudo obtener la lista de archivos.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -134,12 +183,39 @@ class UrlCarga(APIView):
 
             return Response({ 
                 "visitarURL": url_firmada, 
-                "key": s3_key 
+                "key": s3_key,
+                "headers": {
+                    "x-amz-server-side-encryption": "AES256",
+                },
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
             logger.exception("Error al generar presigned URL")
             return Response({"error": "No se pudo generar la URL de carga."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ArchivoMetadata(APIView):
+    def post(self, request):
+        key = request.data.get('key')
+        nombre_proyecto = request.data.get('nombre_proyecto')
+        tamano = request.data.get('tamano')
+
+        if not key:
+            return Response({"error": "La key del archivo es obligatoria."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not nombre_proyecto:
+            return Response({"error": "El nombre del proyecto es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not tamanio_permitido(tamano, 18 * 1024 * 1024):
+            return Response({"error": "El tamaño del archivo no es válido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            item = guardar_metadata_dynamodb(nombre_proyecto, key, tamano)
+            return Response({"metadata": item}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            logger.exception("Error al guardar metadata en DynamoDB")
+            return Response({"error": "No se pudo guardar la metadata del archivo."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -162,8 +238,16 @@ class EliminarArchivoS3(APIView):
 
         try: 
             s3_client.delete_object(Bucket=bucket_name, Key=key)
-            return Response( {"mensaje": f"Archivo '{key}' eliminado correctamente de S3"}, status=status.HTTP_200_OK )
+            metadata_eliminada = eliminar_metadata_dynamodb_por_s3_key(key)
+            return Response(
+                {
+                    "mensaje": f"Archivo '{key}' eliminado correctamente.",
+                    "metadata_eliminada": metadata_eliminada,
+                },
+                status=status.HTTP_200_OK
+            )
 
         except Exception as e:
-            logger.exception("Error al eliminar archivo en S3")
+            logger.exception("Error al eliminar archivo")
             return Response({ "error": "No se pudo eliminar el archivo." }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
